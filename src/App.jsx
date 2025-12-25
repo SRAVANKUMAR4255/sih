@@ -2,14 +2,23 @@
 // SIH25033 - AI-Based Smart Allocation Engine for PM Internship Scheme
 
 import React, { useState } from 'react';
+import { useAuth } from './context/AuthContext';
 import Home from './pages/Home';
 import About from './pages/About';
 import StudentRegister from './pages/StudentRegister';
 import InternshipList from './pages/InternshipList';
 import MatchResults from './pages/MatchResults';
+import Login from './pages/Login';
+import Signup from './pages/Signup';
 
 function App() {
-  // State for navigation - no react-router needed
+  // 🔐 Get authentication state
+  const { isLoggedIn } = useAuth();
+  
+  // State for auth page switching (login/signup)
+  const [authPage, setAuthPage] = useState('login');
+  
+  // State for navigation (after login)
   const [currentPage, setCurrentPage] = useState('home');
 
   // Render the selected page component
@@ -30,6 +39,16 @@ function App() {
     }
   };
 
+  // 🔒 IF NOT LOGGED IN → SHOW LOGIN OR SIGNUP PAGE
+  if (!isLoggedIn) {
+    return authPage === 'login' ? (
+      <Login onSwitchToSignup={() => setAuthPage('signup')} />
+    ) : (
+      <Signup onSwitchToLogin={() => setAuthPage('login')} />
+    );
+  }
+
+  // ✅ IF LOGGED IN → SHOW FULL APPLICATION
   return (
     <div style={styles.container}>
       {/* App Header */}
@@ -37,7 +56,9 @@ function App() {
         <h1 style={styles.title}>
           AI-Based Smart Allocation Engine for PM Internship Scheme
         </h1>
-        <p style={styles.subtitle}>Smart India Hackathon 2025 | Problem ID: SIH25033</p>
+        <p style={styles.subtitle}>
+          Smart India Hackathon 2025 | Problem ID: SIH25033
+        </p>
       </header>
 
       {/* Navigation Bar */}
@@ -110,7 +131,6 @@ const styles = {
   subtitle: {
     margin: '5px 0 0 0',
     fontSize: '14px',
-    fontWeight: 'normal',
   },
   navbar: {
     backgroundColor: '#2563eb',
@@ -128,7 +148,6 @@ const styles = {
     fontSize: '16px',
     cursor: 'pointer',
     borderRadius: '5px',
-    transition: 'background-color 0.3s',
   },
   navButtonActive: {
     backgroundColor: '#1e40af',
